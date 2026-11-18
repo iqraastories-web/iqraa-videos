@@ -1,0 +1,25 @@
+# Efface les videos TikTok du depot public apres leur sortie (18/11/2026). PC eteint : toutes les heures.
+# Aucune cle Buffer ici : chaque video porte son heure d'effacement (6 h apres sa sortie prevue).
+name: Nettoyage des videos
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: nettoyage
+  cancel-in-progress: false
+jobs:
+  nettoyer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python nettoyer.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEPOT: ${{ github.repository }}
